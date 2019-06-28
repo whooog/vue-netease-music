@@ -36,6 +36,7 @@ export default {
         },
 
         addQueue({commit},value) {
+
            commit('addQueue',value)
         }
     },
