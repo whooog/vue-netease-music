@@ -6,6 +6,8 @@ import './common/request.js'
 import './plugins/element.js'
 import store from './store/index.js'
 
+import VueAPlayer from './components/music/vue-aplayer.vue'
+Vue.config.devtools = true
 
 import 'font-awesome/scss/font-awesome.scss'
 

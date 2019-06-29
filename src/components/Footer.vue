@@ -10,7 +10,7 @@
 </template>
 
 <script>
-    import Aplayer from 'm-vue-aplayer'
+    import Aplayer from './music/vue-aplayer'
     import {mapState,mapActions} from 'vuex'
 
     export default {
