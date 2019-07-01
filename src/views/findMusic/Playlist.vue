@@ -2,7 +2,7 @@
     <div id="playlist" style="margin: 30px 0px;">
         <el-row style="min-width: 750px;" class="row">
             <div class="songList-logo">
-                <el-image :src="detail.picUrl" ></el-image>
+                <el-image :src="detail.picUrl"></el-image>
             </div>
             <div class="detail">
                 <div class="title">
@@ -17,7 +17,7 @@
                 </div>
 
                 <div class="btn">
-                    <el-button size="mini" type="primary">播放全部</el-button>
+                    <el-button size="mini" type="primary" @click="getPlaylist()">播放全部</el-button>
                     <el-button size="mini">收藏({{ detail.collectCount }})</el-button>
                     <el-button size="mini">分享({{ detail.shareCount }})</el-button>
                     <el-button size="mini">下载全部</el-button>
@@ -33,17 +33,18 @@
                 </div>
 
                 <div class="pres">
-                   简介：<p v-html="detail.desc" style="display: inline;"></p>
+                    简介：<p v-html="detail.desc" style="display: inline;"></p>
                 </div>
             </div>
         </el-row>
 
         <el-tabs v-model="activeName" @tab-click="handleClick" style="margin-top: 40px">
             <el-tab-pane label="歌曲列表" name="first">
-                <ISongList :ids="detail.music.ids"></ISongList>
+                <ISongList :ids="detail.music.ids" ref="songList"></ISongList>
             </el-tab-pane>
             <el-tab-pane label="评论" name="second">评论</el-tab-pane>
-            <el-tab-pane label="收藏者" name="third">收藏者</el-tab-pane></el-tabs>
+            <el-tab-pane label="收藏者" name="third">收藏者</el-tab-pane>
+        </el-tabs>
     </div>
 </template>
 
@@ -53,67 +54,83 @@
 
     export default {
         name: "playList",
-        components:{
-            ISongList:SongList
+        components: {
+            ISongList: SongList
         },
-        data(){
-            return{
-                detail:{
-                    id:0,
-                    picUrl:'',
-                    name:'',
-                    tags:[],
-                    desc:'',
-                    collectCount:0,
-                    shareCount:0,
-                    playCount:0,
-                    songCount:0,
-                    creatTime:0,
-                    user:{
-                        id:0,
-                        picUrl:'',
-                        name:''
+        data() {
+            return {
+                detail: {
+                    id: 0,
+                    picUrl: '',
+                    name: '',
+                    tags: [],
+                    desc: '',
+                    collectCount: 0,
+                    shareCount: 0,
+                    playCount: 0,
+                    songCount: 0,
+                    creatTime: 0,
+                    user: {
+                        id: 0,
+                        picUrl: '',
+                        name: ''
                     },
-                    music:{
+                    music: {
                         ids: ''
                     }
                 },
-                activeName:'first'
+                activeName: 'first',
             }
         },
-        props:{
-            id:String
+        props: {
+            id: String
         },
-        computed:{
-        },
-        methods:{
-            creatTime(time){
+        watch: {},
+        computed: {},
+        methods: {
+            creatTime(time) {
                 return new Date(time).toLocaleDateString().replace(/\//g, '-');
             },
-            handleClick(){},
+            handleClick() {
+            },
             init() {
                 getPlayListDetailed(this.id).then(response => {
                     this.detail = {
-                        id:response.data.playlist.id,
-                        picUrl:response.data.playlist.coverImgUrl,
-                        tags:response.data.playlist.tags,
-                        name:response.data.playlist.name,
-                        desc:response.data.playlist.description,
-                        collectCount:response.data.playlist.subscribedCount,
-                        shareCount:response.data.playlist.shareCount,
-                        creatTime:this.creatTime(response.data.playlist.createTime),
-                        user:{
-                            id:response.data.playlist.creator.userId,
-                            picUrl:response.data.playlist.creator.avatarUrl,
-                            name:response.data.playlist.creator.nickname
+                        id: response.data.playlist.id,
+                        picUrl: response.data.playlist.coverImgUrl,
+                        tags: response.data.playlist.tags,
+                        name: response.data.playlist.name,
+                        desc: response.data.playlist.description,
+                        collectCount: response.data.playlist.subscribedCount,
+                        shareCount: response.data.playlist.shareCount,
+                        creatTime: this.creatTime(response.data.playlist.createTime),
+                        user: {
+                            id: response.data.playlist.creator.userId,
+                            picUrl: response.data.playlist.creator.avatarUrl,
+                            name: response.data.playlist.creator.nickname
                         },
-                        music:{
-                            ids:response.data.playlist.trackIds.map(item => item.id).join()
+                        music: {
+                            ids: response.data.playlist.trackIds.map(item => item.id).join()
                         }
                     }
                 }).catch(error => {
                     console.log(error)
                 })
+            },
+            getPlaylist() {
+                setTimeout(() => {
+                    var that = this;
+                    this.$refs.songList.musics.forEach((item) => {
+                        that.$store.dispatch('addQueue', {
+                            id: item.id,
+                            title: item.name,
+                            artist: item.artists,
+                            pic: item.picUrl
+                        })
+
+                    })
+                }, 1000)
+
             }
         },
         created() {
@@ -126,6 +143,7 @@
     #playlist {
 
     }
+
     .songList-logo {
         width: 200px;
         height: 200px;
@@ -134,9 +152,11 @@
         margin-right: 30px;
         vertical-align: top;
     }
-    .row{
+
+    .row {
         margin: 0px 30px;
     }
+
     .detail {
         display: inline-block;
         width: calc(100% - 250px);
@@ -145,6 +165,7 @@
             font-size: 22px;
             font-weight: 500;
             line-height: 40px;
+
             span {
                 color: red;
                 border: 1px solid;
@@ -153,39 +174,48 @@
                 vertical-align: top;
             }
         }
+
         .user {
             line-height: 50px;
+
             .userLogo {
                 width: 35px;
                 height: 35px;
                 border-radius: 50%;
                 vertical-align: middle;
-                margin-right:10px;
+                margin-right: 10px;
             }
-            span{
+
+            span {
                 margin-left: 20px;
                 font-size: 13px;
                 color: #aba2a2;
             }
         }
-        .btn{
+
+        .btn {
             line-height: 50px;
         }
-        .label{
+
+        .label {
             line-height: 30px;
             margin-top: 10px;
             font-size: 15px;
-            tag{
+
+            tag {
                 color: deepskyblue;
             }
         }
-        .pres{
+
+        .pres {
             font-size: 15px;
         }
     }
+
     #playlist .el-tabs__nav-wrap::after {
         background-color: transparent;
     }
+
     #playlist .el-tabs__nav {
         transform: translateX(60px) !important;
     }

@@ -1,34 +1,36 @@
 <template>
     <el-footer style="height: auto;padding:0;">
         <Aplayer
-                 :music="music"
-                 repeat="repeat-all"
-                 ref="aplayer"
-                 :list="queue"
+                showLrc
+                ref="aplayer"
+                repeat="list"
+                :music="music"
+                :list="queue"
+
         />
     </el-footer>
 </template>
 
 <script>
-    import Aplayer from './music/vue-aplayer'
-    import {mapState,mapActions} from 'vuex'
+    import Aplayer from 'm-vue-aplayer'
+    import {mapState, mapActions} from 'vuex'
 
     export default {
         name: "Footer",
-        components:{
+        components: {
             Aplayer
         },
-        computed:{
+        computed: {
             ...mapState({
                 music: state => state.music.current,
                 queue: state => state.music.queue
             })
         },
-        watch:{
-            music(){
+        watch: {
+            music() {
                 setTimeout(() => {
                     this.$refs.aplayer.play();
-                },100)
+                }, 100)
             }
         }
     }
@@ -45,6 +47,9 @@
         line-height: 60px;
         background-color: #fff;
         box-sizing: border-box;
+    }
+    .aplayer-list {
+        box-shadow: rgb(204, 204, 204) 0px -2px 4px 1px;
     }
     .aplayer {
         width: 100%;

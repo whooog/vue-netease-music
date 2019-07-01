@@ -51,7 +51,7 @@ export default {
 
     // 对数据获取之前的再次编译，类似于计算属性
     getters:{
-        enumActive(state) {
+        active(state) {
             return state.id !== -1
         }
     }

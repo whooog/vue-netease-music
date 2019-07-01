@@ -63,17 +63,17 @@
         data() {
             return {
                 musics: [
-                    {
-                        id: 0,
-                        name: '',
-                        artists: {},
-                        album: {
-                            name: ''
-                        },
-                        time: '',
-                        picUrl:''
-
-                    }
+                    // {
+                    //     id: 0,
+                    //     name: '',
+                    //     artists: {},
+                    //     album: {
+                    //         name: ''
+                    //     },
+                    //     time: '',
+                    //     picUrl:''
+                    //
+                    // }
                 ],
                 tableStyle:{
                     rowStyle:{
@@ -121,12 +121,10 @@
                 } else {
                     result = '00:' + (second < 10 ? '0' + second : second);
                 }
-                console.log('进来了');
                 return result;
             },
             init(){
                 getSongDetailed(this.ids).then(response => {
-                    console.log(response.data);
 
                     this.musics = response.data.songs.map(item => {
                         return {
@@ -148,7 +146,7 @@
                 this.$store.dispatch('play',{
                     id:row.id,
                     title:row.name,
-                    artist:row.artist,
+                    artist:row.artists,
                     pic:row.picUrl
                 })
             }
