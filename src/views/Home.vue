@@ -49,7 +49,7 @@
     .content{
         position: absolute;
         top: 60px;
-        bottom: 60px;
+        bottom: 90px;
         left: 0;
         width: 100%;
     }

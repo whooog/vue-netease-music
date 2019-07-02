@@ -22,9 +22,37 @@
                 <el-input
                         size="mini"
                         placeholder="搜索音乐，视频，歌词，电台"
-                        suffix-icon="el-icon-search"
-                        v-model="search">
+                        v-model="search"
+                        v-popover:popover
+                        @focus="getHot"
+                        @keyup.enter.native="getHistory"
+
+                >
+                    <i slot="suffix" class="el-input__icon el-icon-search" @click="getHistory"></i>
                 </el-input>
+                <el-popover
+                        ref="popover"
+                        placement="button"
+                        width="461"
+                        trigger="focus">
+                  <div class="content" >
+
+                       <div class="left-content" >
+                           <div class="content-title">
+                               <i class="el-icon-search" style="color: #99a9bf"></i>
+                               热门搜索
+                           </div>
+                           <div v-for="item in popular" :key="item" class="content-desc">{{item}}</div>
+                       </div>
+                      <div class="right-content">
+                            <div class="content-title">
+                                <i class="el-icon-time" style="color: #99a9bf"></i>
+                                搜索历史
+                            </div>
+                           <div  v-for="item in history" :key="item" class="content-desc">{{item}}</div>
+                      </div>
+                  </div>
+                </el-popover>
             </div>
         </div>
 
@@ -36,8 +64,9 @@
                     placement="bottom"
                     width="250"
                     trigger="click"
-                    content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。">
+                  >
                 <el-container>
+                    <el-button type="text" @click="logout"> 退出 </el-button>
                 </el-container>
                     <el-button
                             slot="reference"
@@ -89,6 +118,7 @@
 
     import { mapGetters, mapState } from 'vuex'
     import { ACTION_SET_USER } from "../store/modules/user/types";
+    import { getPopular,getLogout } from '@/api'
 
     export default {
         name: "Navigation",
@@ -104,7 +134,9 @@
                    validPhone: /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/,
                    phone:'',
                    password:''
-               }
+               },
+               popular:[],
+               history: []
            }
         },
         computed:{
@@ -153,10 +185,34 @@
                 })
 
             },
+            logout(){
+                getLogout();
+                // window.location.reload();
+                // this.$router.go(0);
+            },
             showDialog(){
                 if (!this.active){
                     this.loginForm.showLoginDialog = true;
                 }
+            },
+            getHot() {
+                getPopular().then(response => {
+                    if (0 !== this.popular.length) {
+                        return
+                    }
+                    response.data.result.hots.forEach( item => {
+                         this.popular.push(item.first)
+                    })
+                }).catch(error => {
+                    console.log(error)
+                })
+            },
+            getHistory(){
+                console.log('123')
+                if(this.history.indexOf(this.search.trim()) !== -1){
+                    return;
+                }
+                this.history.push(this.search.trim())
             }
         }
     }
@@ -188,9 +244,13 @@
        .el-input__inner{
            background-color: #498DD4 !important;
        }
+       .el-popover {
+           padding: 0px;
+       }
    }
 </style>
 <style lang="scss" scoped>
+
     .el-header {
         position: absolute;
         top: 0;
@@ -213,16 +273,44 @@
                 letter-spacing: .65px;
             }
         }
-        .search-box{
+        .search-box {
             display: inline-block;
             line-height: 60px;
             height: 60px;
             overflow: hidden;
-            .el-button--text{
+            .el-button--text {
                 color: #ffffff;
                 cursor: pointer;
-            }
+             }
 
+            .content {
+                display: inline;
+                .left-content {
+                    width: 50%;
+                    border-right: 1px solid #ccc;
+                    float: left;
+                    box-sizing: border-box;
+                 }
+                .right-content {
+                    width: 50%;
+                    float: left;
+                }
+                .content-title {
+                    border-bottom: 1px solid #ccc;
+                    height: 30px;
+                    line-height: 30px;
+                    padding-left: 10px;
+                }
+                .content-desc {
+                    height: 30px;
+                    line-height: 30px;
+                    padding-left: 20px;
+                }
+                .content-desc:hover {
+                    background: #cccccc;
+                    cursor: pointer;
+                }
+            }
         }
         .land-box{
             display: inline-block;

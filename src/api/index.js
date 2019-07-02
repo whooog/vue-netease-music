@@ -46,3 +46,14 @@ export const getLyric = (id) => request.get('/lyric', {
 }).catch(error => {
     console.log(error)
 })
+
+/*
+* 热门搜索
+*/
+
+export const getPopular = () => request.get('/search/hot')
+
+/*
+* 退出登录
+*/
+export const getLogout = () => request.get('/logout')
